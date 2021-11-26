@@ -43,6 +43,9 @@ public class DirAnaliserMT extends Thread{
             try { 
                 thread.join();
             } catch(InterruptedException e){System.out.println(e);} 
+            synchronized(DirAnaliserMT.activeThreadCount) {
+                DirAnaliserMT.activeThreadCount--;
+            }
             result = result.add(thread.GetResult());
         }
 
@@ -63,6 +66,7 @@ public class DirAnaliserMT extends Thread{
         DirAnaliserMT mainThread = new DirAnaliserMT(path, bigParam, match);
         mainThread.start();
         mainThread.join();
+        DirAnaliserMT.activeThreadCount = 0;
         return mainThread.GetResult();
     }
 
