@@ -27,10 +27,6 @@ public class DirAnaliser {
         return stat;
     }
 
-    public static DirStat AnaliseDirectoryMThread(File path, long bigParam, String match, int threadNum) {
-        return new DirStat();
-    }
-
     public static Map<Boolean, List<File>> listDirectory(File dir) {
         return Stream.of(dir.listFiles()).collect(Collectors.partitioningBy(file -> file.isDirectory()));
     }
