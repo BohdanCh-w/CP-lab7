@@ -3,27 +3,23 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-//"C:\Users\bohda\AppData\Local\Programs\Eclipse Foundation\jdk-11.0.12.7-hotspot\bin\java.exe" @C:\Users\bohda\AppData\Local\Temp\cp_1d0vznn3iz81z4vxbjx6icq7z.argfile Main
-
-
 public class Main { 
     public static void main(String[] args) throws Exception {
         System.out.println();
-        String path = "G:\\Bohdan-G";
+        File path = new File("G:\\Bohdan-G");
         // TestPrintDirectory(path);
         // TestAnaliseDirectory(path);
-        TestAnaliseDirectoryMThread(path);
-        // TestAnaliseDirectoryCompare(path);
+        // TestAnaliseDirectoryMThread(path);
+        // TestAnaliseDirectoryMRunnable(path);
+        TestAnaliseDirectoryCompare(path);
     }
 
-    public static void TestPrintDirectory(String path) throws Exception {
-        var file = new File(path);
+    public static void TestPrintDirectory(File file) throws Exception {
         DirAnaliser.PrintDirectory(file);
     }
 
-    public static void TestAnaliseDirectory(String path) throws Exception {
+    public static void TestAnaliseDirectory(File file) throws Exception {
         System.out.println("One Threaded directory analiser test : ");
-        var file = new File(path);
 
         long startTime = System.nanoTime();
         var stat = DirAnaliser.AnaliseDirectory(file, 1000, ".*\\.psd$");
@@ -34,9 +30,8 @@ public class Main {
         System.out.println("Method execution time: " + duration + "ms\n\n");
     }
 
-    public static void TestAnaliseDirectoryMThread(String path) throws Exception {
-        System.out.println("Multithreading directory analiser test : ");
-        var file = new File(path);
+    public static void TestAnaliseDirectoryMThread(File file) throws Exception {
+        System.out.println("Multithreading directory analiser extending thread test : ");
 
         long startTime = System.nanoTime();
         var stat = DirAnaliserMT.AnaliseDirectory(file, 1000, ".*\\.psd$", 16);
@@ -47,25 +42,47 @@ public class Main {
         System.out.println("Method execution time: " + duration + "ms\n\n");
     }
 
-    public static void TestAnaliseDirectoryCompare(String path) throws Exception {
-        var file = new File(path);
-        Map<String, Double> executionTime = new TreeMap<String, Double>();
+    public static void TestAnaliseDirectoryMRunnable(File file) throws Exception {
+        System.out.println("Multithreading directory analiser implementing runnable test : ");
 
-        long startTimeSingle = System.nanoTime();
+        long startTime = System.nanoTime();
+        var stat = DirAnaliserMR.AnaliseDirectory(file, 1000, ".*\\.psd$", 16);
+        long endTime = System.nanoTime();
+        double duration = (endTime - startTime) / 1_000_000.0;
+
+        System.out.println(stat);
+        System.out.println("Method execution time: " + duration + "ms\n\n");
+    }
+
+    public static void TestAnaliseDirectoryCompare(File file) throws Exception {
+        Map<String, Long> executionTime = new TreeMap<String, Long>();
+
+        long startTime = System.nanoTime();
         DirAnaliser.AnaliseDirectory(file, 1000, ".*\\.psd$");
-        long endTimeSingle = System.nanoTime();
-        executionTime.put("SingleThreaded  ", (endTimeSingle - startTimeSingle) / 1_000_000.0);
+        long duration = System.nanoTime() - startTime;
+        executionTime.put("ST", duration);
+        System.out.println("Single Thread Time : " + duration / 1_000_000.0 + "ms");
 
         for(int num = 0; num < 5; ++num) {
             int threadNum = 1 << num;
 
-            long startTime = System.nanoTime();
+            startTime = System.nanoTime();
             DirAnaliserMT.AnaliseDirectory(file, 1000, ".*\\.psd$", threadNum);
-            long endTime = System.nanoTime();
+            duration = System.nanoTime() - startTime;
         
-            executionTime.put(String.format("MultiThreaded %2d", threadNum), (endTime - startTime) / 1_000_000.0);
+            executionTime.put("MT" + threadNum, duration);
+            System.out.println("Extended Thread " + threadNum + " : " + duration / 1_000_000.0 + "ms");
         }
+
+        for(int num = 0; num < 5; ++num) {
+            int threadNum = 1 << num;
+
+            startTime = System.nanoTime();
+            DirAnaliserMR.AnaliseDirectory(file, 1000, ".*\\.psd$", threadNum);
+            duration = System.nanoTime() - startTime;
         
-        Helper.PrintMap(executionTime);
+            executionTime.put("MR" + threadNum, duration);
+            System.out.println("Implemented Runnable " + threadNum + " : " + duration / 1_000_000.0 + "ms");
+        }
     }
 }
