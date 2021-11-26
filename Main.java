@@ -6,7 +6,7 @@ import java.util.TreeMap;
 public class Main { 
     public static void main(String[] args) throws Exception {
         System.out.println();
-        File path = new File("G:\\Bohdan-G");
+        File path = new File("G:\\Bohdan-G\\.univer");
         // TestPrintDirectory(path);
         // TestAnaliseDirectory(path);
         // TestAnaliseDirectoryMThread(path);

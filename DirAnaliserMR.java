@@ -6,8 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DirAnaliserMR implements Runnable {
-    public static volatile Integer activeThreadCount;
-    static public int maxThreads;
+    private static ThreadCounter threadCounter;
     private File file_path;
     private long bigSize;
     private String name_match;
@@ -28,10 +27,7 @@ public class DirAnaliserMR implements Runnable {
         Map<Thread, DirAnaliserMR> openedThreads = new HashMap<Thread, DirAnaliserMR>();
 
         for(var dir : directories) {
-            if(activeThreadCount < maxThreads) {
-                synchronized(DirAnaliserMR.activeThreadCount) {
-                    DirAnaliserMR.activeThreadCount++;
-                }
+            if(threadCounter.acquire()) {
                 var analiser = new DirAnaliserMR(dir, bigSize, name_match);
                 var thread = new Thread(analiser);
                 openedThreads.put(thread, analiser);
@@ -45,9 +41,7 @@ public class DirAnaliserMR implements Runnable {
             try { 
                 entry.getKey().join();
             } catch(InterruptedException e){System.out.println(e);} 
-            synchronized(DirAnaliserMR.activeThreadCount) {
-                DirAnaliserMR.activeThreadCount--;
-            }
+            threadCounter.release();
             result = result.add(entry.getValue().GetResult());
         }
 
@@ -63,13 +57,13 @@ public class DirAnaliserMR implements Runnable {
     }
 
     public static DirStat AnaliseDirectory(File path, long bigParam, String match, int threadNum) throws Exception {
-        DirAnaliserMR.maxThreads = threadNum;
-        DirAnaliserMR.activeThreadCount = 1;
+        DirAnaliserMR.threadCounter = new ThreadCounter(threadNum);
+        DirAnaliserMR.threadCounter.acquire();
         DirAnaliserMR analiser = new DirAnaliserMR(path, bigParam, match);
         Thread mainThread = new Thread(analiser);
         mainThread.start();
         mainThread.join();
-        DirAnaliserMR.activeThreadCount = 0;
+        DirAnaliserMR.threadCounter.release();
         return analiser.GetResult();
     }
 
