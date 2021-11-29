@@ -31,17 +31,19 @@ public class DirAnaliser {
         return Stream.of(dir.listFiles()).collect(Collectors.partitioningBy(file -> file.isDirectory()));
     }
 
-    public static void PrintDirectory(File path) {
-         PrintDirectory(path, "");
+    public static void PrintDirectory(File path, List<String> ignore) {
+         PrintDirectory(path, "", ignore);
     }
 
-    public static void PrintDirectory(File path, String indent) {
+    public static void PrintDirectory(File path, String indent, List<String> ignore) {
         Map<Boolean, List<File>> content = listDirectory(path);
         List<File> directories = content.get(true);
         List<File> files = content.get(false);
         System.out.println(indent + path.getName() + "/");
         for(var dir : directories) {
-            PrintDirectory(dir, indent + "│   ");
+            if(!ignore.contains(dir.getName())) {
+                PrintDirectory(dir, indent + "│   ", ignore);
+            }
         }
         PrintList(files, indent);
     }
