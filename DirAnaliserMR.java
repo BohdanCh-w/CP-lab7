@@ -30,8 +30,10 @@ public class DirAnaliserMR implements Runnable {
             if(threadCounter.acquire()) {
                 var analiser = new DirAnaliserMR(dir, bigSize, name_match);
                 var thread = new Thread(analiser);
-                openedThreads.put(thread, analiser);
+                thread.setName(dir.getName());
                 thread.start();
+                threadCounter.addThread(thread);
+                openedThreads.put(thread, analiser);
             } else {
                 result = result.add(OneThreaded(dir, bigSize, name_match));
             }
@@ -42,6 +44,7 @@ public class DirAnaliserMR implements Runnable {
                 entry.getKey().join();
             } catch(InterruptedException e){System.out.println(e);} 
             threadCounter.release();
+            threadCounter.removeThread(entry.getKey());
             result = result.add(entry.getValue().GetResult());
         }
 

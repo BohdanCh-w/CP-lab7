@@ -32,8 +32,10 @@ public class DirAnaliserMT extends Thread{
                 synchronized(DirAnaliserMT.activeThreadCount) {
                     DirAnaliserMT.activeThreadCount++;
                 }
-                openedThreads.add(new DirAnaliserMT(dir, bigSize, name_match));
-                openedThreads.get(openedThreads.size() - 1).start();
+                var thread = new DirAnaliserMT(dir, bigSize, name_match);
+                thread.setName(dir.getName());
+                thread.start();
+                openedThreads.add(thread);
             } else {
                 result = result.add(OneThreaded(dir, bigSize, name_match));
             }

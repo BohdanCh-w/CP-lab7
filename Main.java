@@ -1,4 +1,6 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -10,12 +12,12 @@ public class Main {
         // TestPrintDirectory(path);
         // TestAnaliseDirectory(path);
         // TestAnaliseDirectoryMThread(path);
-        // TestAnaliseDirectoryMRunnable(path);
-        TestAnaliseDirectoryCompare(path);
+        TestAnaliseDirectoryMRunnable(path);
+        // TestAnaliseDirectoryCompare(path);
     }
 
     public static void TestPrintDirectory(File file) throws Exception {
-        DirAnaliser.PrintDirectory(file);
+        DirAnaliser.PrintDirectory(file, new ArrayList<String>(Arrays.asList(".git")));
     }
 
     public static void TestAnaliseDirectory(File file) throws Exception {
