@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DirAnaliserMR implements Runnable {
-    private static ThreadCounter threadCounter;
+    public static ThreadCounter threadCounter;
     private File file_path;
     private long bigSize;
     private String name_match;

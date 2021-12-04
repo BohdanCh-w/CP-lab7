@@ -13,7 +13,7 @@ class ThreadCounter {
     }
 
     public synchronized boolean acquire(){
-        if(activeThreadCount < maxThreads) {
+        if(activeThreadCount <= maxThreads) {
             activeThreadCount++;
             return true;
         }
@@ -30,5 +30,9 @@ class ThreadCounter {
 
     public synchronized void removeThread(Thread thread) {
         threads.remove(thread);
+    }
+
+    public synchronized List<Thread> getThreads() {
+        return threads;
     }
 }

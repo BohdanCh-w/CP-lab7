@@ -12,8 +12,22 @@ public class Main {
         // TestPrintDirectory(path);
         // TestAnaliseDirectory(path);
         // TestAnaliseDirectoryMThread(path);
-        TestAnaliseDirectoryMRunnable(path);
-        // TestAnaliseDirectoryCompare(path);
+        // TestAnaliseDirectoryMRunnable(path);
+        TestAnaliseDirectoryCompare(path);
+        // StartUI(path);
+    }
+
+    public static void StartUI(File file) throws Exception {
+        DirAnaliserMR.threadCounter = new ThreadCounter(4);
+        DirAnaliserMR.threadCounter.acquire();
+        DirAnaliserMR analiser = new DirAnaliserMR(file, 10000, ".*\\.psd$");
+        Thread mainThread = new Thread(analiser);
+        var ui = new UI(DirAnaliserMR.threadCounter);
+        mainThread.start();
+        ui.start();
+        mainThread.join();
+        DirAnaliserMR.threadCounter.release();
+        System.out.println(analiser.GetResult());
     }
 
     public static void TestPrintDirectory(File file) throws Exception {
