@@ -13,8 +13,8 @@ public class Main {
         // TestAnaliseDirectory(path);
         // TestAnaliseDirectoryMThread(path);
         // TestAnaliseDirectoryMRunnable(path);
-        TestAnaliseDirectoryCompare(path);
-        // StartUI(path);
+        // TestAnaliseDirectoryCompare(path);
+        StartUI(path);
     }
 
     public static void StartUI(File file) throws Exception {
